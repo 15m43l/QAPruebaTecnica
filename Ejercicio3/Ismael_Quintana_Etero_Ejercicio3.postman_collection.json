@@ -1,0 +1,296 @@
+{
+	"info": {
+		"_postman_id": "2ac712b0-3eae-40ca-928c-22b40dc248c0",
+		"name": "Ismael_Quintana_Etero_Ejercicio3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "27961134"
+	},
+	"item": [
+		{
+			"name": "01_PostNewUserName",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n  {\r\n    \"id\": 1,\r\n    \"username\": \"15m43l_1k\",\r\n    \"firstName\": \"MyName\",\r\n    \"lastName\": \"MyLastName\",\r\n    \"email\": \"email@email.com\",\r\n    \"password\": \"12345678\",\r\n    \"phone\": \"12345678\",\r\n    \"userStatus\": 1\r\n  }\r\n]"
+				},
+				"url": {
+					"raw": "https://petstore.swagger.io/v2/user/createWithList",
+					"protocol": "https",
+					"host": [
+						"petstore",
+						"swagger",
+						"io"
+					],
+					"path": [
+						"v2",
+						"user",
+						"createWithList"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "02_RequestMyUser",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://petstore.swagger.io/v2/user/15m43l_1k",
+					"protocol": "https",
+					"host": [
+						"petstore",
+						"swagger",
+						"io"
+					],
+					"path": [
+						"v2",
+						"user",
+						"15m43l_1k"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "03_RequestIdAndName",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Variables de inicio.\r",
+							"let printed = {}\r",
+							"var iteration = 0\r",
+							"\r",
+							"// Funcion que crea el JSON de mascotas\r",
+							"pm.test(\"Get all the ids and names of pets\", function () {\r",
+							"\r",
+							"let users = JSON.parse(responseBody);\r",
+							"users.forEach(function (user) {\r",
+							"    printed[iteration] = {}\r",
+							"    printed[iteration][\"Pet ID\"] = user.id  \r",
+							"    printed[iteration++][\"Pet Name\"] = user.name\r",
+							"})\r",
+							"});\r",
+							"\r",
+							"// OUTPUT FINAL Y REGISTRO DEL JSON DE MASCOTAS COMO VARIABLE GLOBAL\r",
+							"console.log(printed)\r",
+							"pm.globals.set(\"variable_printed\", printed);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://petstore.swagger.io/v2/pet/findByStatus?status=sold",
+					"protocol": "https",
+					"host": [
+						"petstore",
+						"swagger",
+						"io"
+					],
+					"path": [
+						"v2",
+						"pet",
+						"findByStatus"
+					],
+					"query": [
+						{
+							"key": "status",
+							"value": "sold"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "04_ClassWithRequesterIdAndName",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ANTES DE EJECUTAR ESTE CASO HAY QUE EJECUTAR EL ANTERIOR\r",
+							"// Variables de inicio.\r",
+							"mascotas = \"\" \r",
+							"let printed = {}\r",
+							"\r",
+							"// Clase mascota\r",
+							"class Mascota {\r",
+							"    // El constructor obtiene la variable global de las mascotas.\r",
+							"    constructor () {\r",
+							"        mascotas = pm.globals.get(\"variable_printed\")\r",
+							"    }\r",
+							"\r",
+							"    // Metodo que recorre el JSON\r",
+							"    recorreMascotas() {\r",
+							"        // Variables del metodo\r",
+							"        let between = false\r",
+							"        let iterator = 0\r",
+							"        let ending = {}\r",
+							"        \r",
+							"        // Bucle doble que compara el JSON para asegurarse de que son iguales\r",
+							"        for (i = 0; i < Object.keys(mascotas).length; i++) {\r",
+							"            for (y = 0; y < Object.keys(mascotas).length; y++) {\r",
+							"                if (mascotas[i][\"Pet ID\"] == mascotas[y][\"Pet ID\"] && mascotas[i][\"Pet Name\"] == mascotas[y][\"Pet Name\"] && i != y) {    \r",
+							"                    printed[iterator] = {}\r",
+							"                    printed[iterator++] = printed[y]\r",
+							"                }\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"        // Bucle que filtra errores inesperados undefined\r",
+							"        for (i = 0; i < printed.length; i++) {\r",
+							"            if (printed[i] != undefined) {\r",
+							"                ending[i] = printed[i]\r",
+							"            }\r",
+							"        }\r",
+							"\r",
+							"        // Devuelve aquellos resultados que haya repetidos\r",
+							"        return ending\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"// Creacion de nuevo objeto.\r",
+							"let mascotasIguales = new Mascota()\r",
+							"\r",
+							"// Output final.\r",
+							"console.log(\"Nombres repetidos en el siguiente log:\")\r",
+							"console.log(mascotasIguales.recorreMascotas())"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://petstore.swagger.io/",
+					"protocol": "https",
+					"host": [
+						"petstore",
+						"swagger",
+						"io"
+					],
+					"path": [
+						""
+					]
+				}
+			},
+			"response": [
+				{
+					"name": "04_ClassWithRequesterIdAndName",
+					"originalRequest": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://petstore.swagger.io/",
+							"protocol": "https",
+							"host": [
+								"petstore",
+								"swagger",
+								"io"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"status": "OK",
+					"code": 200,
+					"_postman_previewlanguage": "html",
+					"header": [
+						{
+							"key": "Date",
+							"value": "Thu, 22 Jun 2023 16:07:31 GMT"
+						},
+						{
+							"key": "Content-Type",
+							"value": "text/html"
+						},
+						{
+							"key": "Content-Length",
+							"value": "327"
+						},
+						{
+							"key": "Connection",
+							"value": "keep-alive"
+						},
+						{
+							"key": "Server",
+							"value": "nginx"
+						},
+						{
+							"key": "Last-Modified",
+							"value": "Mon, 19 Jun 2023 10:04:00 GMT"
+						},
+						{
+							"key": "Vary",
+							"value": "Accept-Encoding"
+						},
+						{
+							"key": "ETag",
+							"value": "\"64902810-147\""
+						},
+						{
+							"key": "Content-Encoding",
+							"value": "gzip"
+						},
+						{
+							"key": "Expires",
+							"value": "Fri, 23 Jun 2023 16:07:31 GMT"
+						},
+						{
+							"key": "Cache-Control",
+							"value": "max-age=86400"
+						},
+						{
+							"key": "Access-Control-Allow-Origin",
+							"value": "*"
+						},
+						{
+							"key": "Access-Control-Allow-Methods",
+							"value": "GET, POST, OPTIONS"
+						},
+						{
+							"key": "Access-Control-Allow-Headers",
+							"value": "DNT,X-CustomHeader,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type"
+						},
+						{
+							"key": "Accept-Ranges",
+							"value": "bytes"
+						}
+					],
+					"cookie": [],
+					"body": "<!-- HTML for static distribution bundle build -->\n<!DOCTYPE html>\n<html lang=\"en\">\n    <head>\n        <meta charset=\"UTF-8\">\n        <title>Swagger UI</title>\n        <link rel=\"stylesheet\" type=\"text/css\" href=\"./swagger-ui.css\" />\n        <link rel=\"stylesheet\" type=\"text/css\" href=\"index.css\" />\n        <link rel=\"icon\" type=\"image/png\" href=\"./favicon-32x32.png\" sizes=\"32x32\" />\n        <link rel=\"icon\" type=\"image/png\" href=\"./favicon-16x16.png\" sizes=\"16x16\" />\n    </head>\n    <body>\n        <div id=\"swagger-ui\"></div>\n        <script src=\"./swagger-ui-bundle.js\" charset=\"UTF-8\"> </script>\n        <script src=\"./swagger-ui-standalone-preset.js\" charset=\"UTF-8\"> </script>\n        <script src=\"./swagger-initializer.js\" charset=\"UTF-8\"> </script>\n    </body>\n</html>"
+				}
+			]
+		}
+	]
+}
